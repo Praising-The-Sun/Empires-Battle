@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -146,6 +147,29 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e070cc1ac16cb354f882cdaa043f34b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_speed: 50
+  m_movementLerp: 0.5
+  m_mouseInputActive: 1
+  m_outline: 30
+  m_keyInputActive: 1
+  m_horizontalAxis: Horizontal
+  m_verticalAxis: Vertical
+  m_scalingActive: 1
+  m_scalingSpeed: 300
+  m_scalingLerp: 0.5
+  m_minimalOrtographicSize: 5
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -234,7 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tilemap: {fileID: 1386484366}
   m_tile: {fileID: 11400000, guid: 197a8769858ff4c469696f199ee96227, type: 2}
-  m_provincesImagePath: Assets/Map/World_Map_v3.png
+  m_provincesImagePath: Assets/Map/World_Map_v3_monochrome.png
   m_provincesIdPath: Assets/Map/colors2Id.txt
   width: 0
   height: 0
