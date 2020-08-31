@@ -8,7 +8,7 @@ public class CameraMovement : MonoBehaviour
 
     [Header("Horizontal & Vertical movement")]
     
-    [Header("Camera parametors")]
+    [Header("Camera parameters")]
     [SerializeField]
     private float m_speed = 100f; // Скорость перемещения камеры 
     [SerializeField]
