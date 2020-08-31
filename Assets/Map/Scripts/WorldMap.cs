@@ -25,6 +25,7 @@ public class WorldMap : MonoBehaviour
     public int height;
 
     public List<Province> provinces;
+    public Dictionary<Vector2Int, Province> tilemap;
 
     private void Awake()
     {
@@ -53,6 +54,7 @@ public class WorldMap : MonoBehaviour
             var color2Id = new Dictionary<Color32, int>();
 
             provinces = new List<Province>();
+            tilemap = new Dictionary<Vector2Int, Province>();
             using (StreamReader provincesId = new StreamReader(m_provincesIdPath))
             {
                 if (provincesId == null)
@@ -70,18 +72,23 @@ public class WorldMap : MonoBehaviour
                     
                     int id = provinces.Count + 1;
                     Color32 color = new Color32(red, green, blue, 255);
+
                     provinces.Add(new Province(id, color, ref m_tilemap, ref m_tile));
                     color2Id.Add(color, id);
                 }
             }
 
+            // Раздача тайлов провинциям по их цвету
             Color32[] pixels = provincesMap.GetPixels32();
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
                     int i = y * width + x;
                     if (color2Id.ContainsKey(pixels[i]))
                     {
-                        provinces[color2Id[pixels[i]] - 1].AddPosition(x, y);
+                        Vector2Int pos = new Vector2Int(x, y);
+
+                        provinces[color2Id[pixels[i]] - 1].AddPosition(pos);
+                        tilemap.Add(pos, provinces[color2Id[pixels[i]] - 1]);
                     }
                 }
             }
