@@ -34,8 +34,6 @@ public class WorldMap : MonoBehaviour
         else if (instance != this)
             Destroy(gameObject);
 
-        DontDestroyOnLoad(gameObject);
-
         Initialize();
     }
 
