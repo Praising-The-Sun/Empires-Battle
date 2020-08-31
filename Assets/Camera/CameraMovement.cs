@@ -98,6 +98,26 @@ public class CameraMovement : MonoBehaviour
                     )
                 );
         }
+        if (Input.GetKey(KeyCode.E))
+        {
+            m_camera.orthographicSize = Mathf.Max(
+                m_minimalOrtographicSize,
+                Mathf.Min(Mathf.Lerp(m_camera.orthographicSize,
+                m_camera.orthographicSize + -1f * m_scalingSpeed * Time.deltaTime *0.75f,
+                m_scalingLerp),
+                m_maximalOrtographicSize)
+           );
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            m_camera.orthographicSize = Mathf.Max(
+                m_minimalOrtographicSize,
+                Mathf.Min(Mathf.Lerp(m_camera.orthographicSize,
+                m_camera.orthographicSize + m_scalingSpeed * Time.deltaTime * 0.75f,
+                m_scalingLerp),
+                m_maximalOrtographicSize)
+           );
+        }
 
         // Определение новой позиции камеры
         Vector3 newPosition = Vector3.Lerp(transform.position, transform.position +
