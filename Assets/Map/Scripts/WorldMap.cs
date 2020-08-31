@@ -76,7 +76,6 @@ public class WorldMap : MonoBehaviour
             }
 
             Color32[] pixels = provincesMap.GetPixels32();
-            Debug.Log(pixels.Length);
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
                     int i = y * width + x;
