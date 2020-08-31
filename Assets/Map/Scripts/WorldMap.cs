@@ -26,7 +26,7 @@ public class WorldMap : MonoBehaviour
 
     public List<Province> provinces;
 
-    private void Start()
+    private void Awake()
     {
         if (instance == null)
             instance = this;
@@ -50,41 +50,39 @@ public class WorldMap : MonoBehaviour
             width = provincesMap.width;
             height = provincesMap.height;
 
-            var color2Id = new Dictionary<Color, int>();
+            var color2Id = new Dictionary<Color32, int>();
 
             provinces = new List<Province>();
             using (StreamReader provincesId = new StreamReader(m_provincesIdPath))
             {
                 if (provincesId == null)
-                    throw new ArgumentNullException("World Map: couldn't find the provinces color id conventor!");
+                    throw new FileNotFoundException("World Map: couldn't find the provinces color id conventor!");
+                
                 string line;
                 while ((line = provincesId.ReadLine()) != null)
                 {
                     string[] tokens = line.Trim().Split(' ');
 
                     // Определение цвета
-                    float red = Convert.ToInt32(tokens[1].Substring(0, 2), 16) / 255f;
-                    float blue = Convert.ToInt32(tokens[1].Substring(2, 2), 16) / 255f;
-                    float green = Convert.ToInt32(tokens[1].Substring(4, 2), 16) / 255f;
-
-                    int id = int.Parse(tokens[0]);
-                    Color color = new Color(red, blue, green);
-
-                    provinces.Add(new Province(id, color));
+                    byte red = Convert.ToByte(tokens[0].Substring(0, 2), 16);
+                    byte green = Convert.ToByte(tokens[0].Substring(2, 2), 16);
+                    byte blue = Convert.ToByte(tokens[0].Substring(4, 2), 16);
+                    
+                    int id = provinces.Count + 1;
+                    Color32 color = new Color32(red, green, blue, 255);
+                    provinces.Add(new Province(id, color, ref m_tilemap, ref m_tile));
                     color2Id.Add(color, id);
                 }
             }
 
+            Color32[] pixels = provincesMap.GetPixels32();
+            Debug.Log(pixels.Length);
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
-                    Color color = provincesMap.GetPixel(x, y);
-                    if (color2Id.ContainsKey(color))
+                    int i = y * width + x;
+                    if (color2Id.ContainsKey(pixels[i]))
                     {
-                        provinces[color2Id[color] - 1].AddPosition(x, y);
-                        
-                    } else
-                    {
-                        m_tilemap.SetTile(new Vector3Int(x, y, 0), m_tile);
+                        provinces[color2Id[pixels[i]] - 1].AddPosition(x, y);
                     }
                 }
             }
