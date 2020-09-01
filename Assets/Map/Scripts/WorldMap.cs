@@ -26,6 +26,7 @@ public class WorldMap : MonoBehaviour
 
     public List<Province> provinces;
     public Dictionary<Vector2Int, Province> tilemap;
+    public List<Player> players;
 
     private void Awake()
     {
@@ -41,23 +42,23 @@ public class WorldMap : MonoBehaviour
     {
         var provincesMap = new Texture2D(0, 0);
         bool loaded = provincesMap.LoadImage(File.ReadAllBytes(m_provincesImagePath));
+
         if (loaded)
         {
-            if (provincesMap == null)
-                throw new FileNotFoundException("World Map: couldn't find the provinces map!");
-
             width = provincesMap.width;
             height = provincesMap.height;
 
             var color2Id = new Dictionary<Color32, int>();
 
             provinces = new List<Province>();
+            players = new List<Player>();
             tilemap = new Dictionary<Vector2Int, Province>();
+
             using (StreamReader provincesId = new StreamReader(m_provincesIdPath))
             {
                 if (provincesId == null)
                     throw new FileNotFoundException("World Map: couldn't find the provinces color id conventor!");
-                
+
                 string line;
                 while ((line = provincesId.ReadLine()) != null)
                 {
@@ -85,11 +86,15 @@ public class WorldMap : MonoBehaviour
                     {
                         Vector2Int pos = new Vector2Int(x, y);
 
+                        // Передаём экземпляр одного объекта, чтобы не тратилась лишняя память
                         provinces[color2Id[pixels[i]] - 1].AddPosition(pos);
                         tilemap.Add(pos, provinces[color2Id[pixels[i]] - 1]);
                     }
                 }
             }
+
+            foreach (Province province in provinces)
+                province.Render();
         }
     }
 }
