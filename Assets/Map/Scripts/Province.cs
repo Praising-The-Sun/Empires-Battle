@@ -1,10 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[Serializable]
 public class Province
 {
+    private readonly static Vector2Int[] delta = new Vector2Int[]{
+            new Vector2Int(0, 1),
+            new Vector2Int(1, 0),
+            new Vector2Int(-1, 0),
+            new Vector2Int(0, -1)
+    };
+
     public readonly int id; // Персональный id (позиция объекта в массиве WorldMap.instance.provinces)
     public readonly Color32 color; // Цвет провинции на изображении
 
@@ -15,15 +26,21 @@ public class Province
 
     public Player player { get; private set; } = null;
 
+    public HashSet<Province> neighbours { get; private set; }
+
     public Province(int id, Color32 color, ref Tilemap tilemap, ref Tile tile, Player player = null)
     {
         this.id = id;
         this.color = color;
 
         m_tile = tile;
+        m_tile.flags = TileFlags.LockTransform;
+
         m_tilemap = tilemap;
 
         m_tiles = new HashSet<Vector2Int>();
+
+        neighbours = new HashSet<Province>();
 
         SetPlayer(player);
     }
@@ -36,31 +53,50 @@ public class Province
         if (m_tiles.Contains(newPosition))
             return;
         m_tiles.Add(newPosition);
-
-        m_tile.flags = TileFlags.LockTransform;
+        
         m_tilemap.SetTile((Vector3Int)newPosition, m_tile);
     }
 
-    /**
-     * В зависимости от принадлежности к игроку красит тайлы + рисует границы
-     */
-    public void Render()
+    public void FindNeighbours()
     {
-        Vector2Int[] delta = new Vector2Int[]{
-            new Vector2Int(0, 1),
-            new Vector2Int(1, 0),
-            new Vector2Int(-1, 0),
-            new Vector2Int(0, -1)
-        };
+        neighbours.Clear();
 
+        foreach (Vector2Int tile in m_tiles)
+        {
+
+            for (int i = 0; i < delta.Length; ++i)
+            {
+                Vector2Int pos = tile + delta[i];
+                if (!m_tiles.Contains(pos) && WorldMap.instance.tilemap.ContainsKey(pos))
+                {
+                    neighbours.Add(WorldMap.instance.tilemap[pos]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Красит тайлы + рисует границы
+     */
+    public void Render(Color32? color = null)
+    {
         foreach (Vector2Int tile in m_tiles)
         {
             int cnt = 0;
             for (int i = 0; i < delta.Length; ++i)
-                cnt += m_tiles.Contains(new Vector2Int(tile.x + delta[i].x, tile.y + delta[i].y)) ? 1 : 0;
+            {
+                cnt += m_tiles.Contains(tile + delta[i]) ? 1 : 0;
+            }
+
+            Color resultColor = Color.white;
+            if (player != null)
+                resultColor = (Color)player.color;
+            if (color != null)
+                resultColor = (Color)color;
+            if (cnt < 4)
+                resultColor = Color.black; 
             
-            m_tilemap.SetColor((Vector3Int)tile, cnt < 4 ? Color.black :
-                player != null ? (Color)player.color : Color.white);
+            m_tilemap.SetColor((Vector3Int)tile, resultColor);
         }
     }
     

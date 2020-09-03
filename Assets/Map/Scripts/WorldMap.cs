@@ -23,7 +23,7 @@ public class WorldMap : MonoBehaviour
     [Header("Non optional parametors")]
     public int width;
     public int height;
-
+    
     public List<Province> provinces;
     public Dictionary<Vector2Int, Province> tilemap;
     public List<Player> players;
@@ -94,7 +94,10 @@ public class WorldMap : MonoBehaviour
             }
 
             foreach (Province province in provinces)
+            {
+                province.FindNeighbours();
                 province.Render();
+            }
         }
     }
 }
