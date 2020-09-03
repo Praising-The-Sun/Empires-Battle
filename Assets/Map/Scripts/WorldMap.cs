@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 public class WorldMap : MonoBehaviour
 {
     public static WorldMap instance = null;
+
     [SerializeField, Header("Tilemap")]
     private Tilemap m_tilemap;
     [SerializeField]
@@ -20,13 +21,13 @@ public class WorldMap : MonoBehaviour
     [SerializeField]
     private string m_provincesIdPath = "";
 
-    [Header("Non optional parametors")]
-    public int width;
-    public int height;
-    
-    public List<Province> provinces;
-    public Dictionary<Vector2Int, Province> tilemap;
-    public List<Player> players;
+    public int width { get; private set; }
+    public int height { get; private set; }
+
+    public List<Province> provinces { get; } = new List<Province>();
+    public Dictionary<Vector2Int, Province> tilemap { get; } =
+        new Dictionary<Vector2Int, Province>();
+    public List<Player> players { get; } = new List<Player>();
 
     private void Awake()
     {
@@ -49,10 +50,6 @@ public class WorldMap : MonoBehaviour
             height = provincesMap.height;
 
             var color2Id = new Dictionary<Color32, int>();
-
-            provinces = new List<Province>();
-            players = new List<Player>();
-            tilemap = new Dictionary<Vector2Int, Province>();
 
             using (StreamReader provincesId = new StreamReader(m_provincesIdPath))
             {
@@ -99,5 +96,12 @@ public class WorldMap : MonoBehaviour
                 province.Render();
             }
         }
+    }
+
+    public Player GetPlayer(Vector2Int position)
+    {
+        if (tilemap.ContainsKey(position))
+            return tilemap[position].player;
+        return null;
     }
 }
